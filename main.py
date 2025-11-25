@@ -1,20 +1,10 @@
 import flet as ft
 import random
-
-# -----------------------------
-# Word list
-# -----------------------------
 from words import words
-
-# Shuffle words at the start
 random.shuffle(words)
 
-# -----------------------------
-# Hangman Game
-# -----------------------------
 def HangmanView(page: ft.Page, leaderboard, word_index=0):
     if word_index >= len(words):
-        # All words done
         page.controls.clear()
         page.add(ft.Column([
             ft.Text("🎉 All words completed!", size=45, weight=ft.FontWeight.BOLD),
@@ -28,7 +18,6 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
     guessed_letters = []
     attempts = 5
 
-    # UI Elements
     hearts = ft.Text(size=32, color="red")
     word_display = ft.Text(size=32, weight=ft.FontWeight.BOLD)
     message = ft.Text(size=22)
@@ -36,11 +25,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
     hangman_stages = ["","O","O\n |","O\n/|","O\n/|\\","O\n/|\\\n/","O\n/|\\\n/ \\"]
     hangman_display = ft.Text(size=40, color="white", text_align=ft.TextAlign.CENTER)
 
-    # -----------------------------
-    # Helper Functions
-    # -----------------------------
     def update_ui():
-        # Word display
         display = ""
         for letter in secret_word:
             if letter in guessed_letters:
@@ -49,20 +34,19 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
                 display += "_ "
         word_display.value = display
 
-        # Hearts
+
         hearts.value = "❤️ " * attempts
 
-        # Hangman drawing
+
         hangman_display.value = hangman_stages[5 - attempts]
 
-        # Score
+
         score_text.value = f"Score: {leaderboard['score']}"
 
         page.update()
 
     def check_word():
         nonlocal attempts
-        # Word guessed
         if all(l in guessed_letters for l in secret_word):
             leaderboard['score'] += 5
             HangmanView(page, leaderboard, word_index+1)
@@ -70,9 +54,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
             leaderboard['score'] -= 1
             HangmanView(page, leaderboard, word_index+1)
 
-    # -----------------------------
-    # Letter Clicked
-    # -----------------------------
+
     def letter_click(e):
         nonlocal attempts
         letter = e.control.text
@@ -85,9 +67,6 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
         update_ui()
         check_word()
 
-    # -----------------------------
-    # Restart Word
-    # -----------------------------
     def restart_word(e):
         nonlocal guessed_letters, attempts
         guessed_letters = []
@@ -96,9 +75,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
             btn.disabled = False
         update_ui()
 
-    # -----------------------------
-    # Keyboard
-    # -----------------------------
+
     keyboard_buttons = []
     rows = []
     row = []
@@ -115,9 +92,6 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
 
     restart_btn = ft.ElevatedButton("🔄 Restart Word", on_click=restart_word)
 
-    # -----------------------------
-    # Layout
-    # -----------------------------
     page.controls.clear()
     page.add(ft.Column([
         ft.Text(f"Word {word_index+1} / {len(words)}", size=25),
@@ -133,9 +107,6 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
 
     update_ui()
 
-# -----------------------------
-# Home Page
-# -----------------------------
 def HomeView(page: ft.Page, leaderboard):
     page.controls.clear()
     page.add(ft.Column([
@@ -145,14 +116,10 @@ def HomeView(page: ft.Page, leaderboard):
     ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=20))
     page.update()
 
-# -----------------------------
-# Main Function
-# -----------------------------
 def main(page: ft.Page):
     page.title = "Hangman Game"
     page.theme = ft.Theme(color_scheme_seed=ft.Colors.GREEN)
     leaderboard = {"score": 0}
     HomeView(page, leaderboard)
 
-# Run App
 ft.app(target=main, view=ft.AppView.WEB_BROWSER)
