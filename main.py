@@ -123,7 +123,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
     rows = []
     row = []
     for i, letter in enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
-        btn = ft.ElevatedButton(letter, width=40, height=40, style=ft.ButtonStyle(bgcolor={"": "#222"}, color={"": "white"}, shape=ft.RoundedRectangleBorder(radius=8)),
+        btn = ft.ElevatedButton(letter, width=40, height=40, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
                                 on_click=letter_click)
         keyboard_buttons.append(btn)
         row.append(btn)
