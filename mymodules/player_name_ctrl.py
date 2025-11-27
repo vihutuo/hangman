@@ -45,7 +45,7 @@ class PlayerNameControl(ft.Text):
                       except Exception as ex:
                             print("on_name_change callback error:", ex)
                   self.page.update()
-                  self._text_control.update()
+                  self.update()
 
               def close_dlg_cancel(e):
                   dlg_modal.open = False
