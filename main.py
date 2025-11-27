@@ -7,23 +7,27 @@ random.shuffle(words)
 def HomeView(page: ft.Page, leaderboard):
     page.controls.clear()
     page.add(
-        ft.Column(
-            [
-                ft.Text("👻 HANGMAN GAME 👻",
-                        size=48,
-                        weight=ft.FontWeight.BOLD,
-                        color="#FF7A7A",
-                        font_family="Creepster"),
-                ft.ElevatedButton("▶ Play Hangman",
-                                  on_click=lambda e: HangmanView(page, leaderboard),
-                                  width=220,
-                                  height=50),
-                ft.Text(f"Score: {leaderboard['score']}", size=22, color="#FFD369", font_family="Creepster"),
-                ft.Text(f"Hints: {leaderboard.get('hints',3)}", size=22, color="#00FFFF", font_family="Creepster")
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=15
+        ft.Container(
+            content=ft.Column(
+                [
+                    ft.Text("👻 HANGMAN GAME 👻",
+                            size=48,
+                            weight=ft.FontWeight.BOLD,
+                            color="#FF7A7A",
+                            font_family="Comic Sans MS"),
+                    ft.ElevatedButton("▶ Play Hangman",
+                                      on_click=lambda e: HangmanView(page, leaderboard),
+                                      width=220,
+                                      height=50),
+                    ft.Text(f"Score: {leaderboard['score']}", size=22, color="#FFD369", font_family="Comic Sans MS"),
+                    ft.Text(f"Hints: {leaderboard.get('hints',3)}", size=22, color="#00FFFF", font_family="Comic Sans MS")
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=15
+            ),
+            expand=True,
+            alignment=ft.alignment.center
         )
     )
     page.update()
@@ -34,7 +38,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
         page.add(
             ft.Column(
                 [
-                    ft.Text("🎉 All words completed!", size=40, weight=ft.FontWeight.BOLD, color="#FFD369", font_family="Creepster"),
+                    ft.Text("🎉 All words completed!", size=40, weight=ft.FontWeight.BOLD, color="#FFD369", font_family="Comic Sans MS"),
                     ft.ElevatedButton("🏠 Back to Home", on_click=lambda e: HomeView(page, leaderboard))
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -55,7 +59,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
     hangman_stages = ["", "O", "O\n |", "O\n/|", "O\n/|\\", "O\n/|\\\n/", "O\n/|\\\n/ \\"]
 
     hangman_display = ft.Container(
-        content=ft.Text("", size=38, color="#FF4F4F", weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, font_family="Creepster"),
+        content=ft.Text("", size=38, color="#FF4F4F", weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, font_family="Comic Sans MS"),
         width=260,
         height=200,
         alignment=ft.alignment.center,
@@ -65,16 +69,30 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
         border=ft.border.all(3, "#FF4F4F")
     )
 
-    word_display = ft.Text(" ".join("_" if c.isalpha() else c for c in secret_word),
-                           size=36, color="#FFFFFF", weight=ft.FontWeight.BOLD, font_family="Creepster")
-    message = ft.Text("", size=24, color="#FFD369", weight=ft.FontWeight.BOLD, font_family="Creepster")
-    score_text = ft.Text(f"Score: {score}", size=26, color="#FFDD55", weight=ft.FontWeight.BOLD, font_family="Creepster")
-    attempts_text = ft.Text(f"Attempts: {attempts}", size=24, color="#FF4F4F", weight=ft.FontWeight.BOLD, font_family="Creepster")
-    hints_text = ft.Text(f"Hints: {hints}", size=24, color="#00FFFF", weight=ft.FontWeight.BOLD, font_family="Creepster")
-    hearts = ft.Text("❤ " * attempts, size=32, color="#FF2B2B", weight=ft.FontWeight.BOLD, font_family="Creepster")
+    message = ft.Text("", size=24, color="#FFD369", weight=ft.FontWeight.BOLD, font_family="Comic Sans MS")
+    score_text = ft.Text(f"Score: {score}", size=26, color="#FFDD55", weight=ft.FontWeight.BOLD, font_family="Comic Sans MS")
+    attempts_text = ft.Text(f"Attempts: {attempts}", size=24, color="#FF4F4F", weight=ft.FontWeight.BOLD, font_family="Comic Sans MS")
+    hints_text = ft.Text(f"Hints: {hints}", size=24, color="#00FFFF", weight=ft.FontWeight.BOLD, font_family="Comic Sans MS")
+    hearts = ft.Text("❤ " * attempts, size=32, color="#FF2B2B", weight=ft.FontWeight.BOLD, font_family="Comic Sans MS")
 
     def update_ui():
-        word_display.value = " ".join(c if c in guessed_letters else "_" for c in secret_word)
+        tiles_row.controls.clear()
+        for letter in secret_word:
+            if letter in guessed_letters:
+                display_letter = letter
+            else:
+                display_letter = ""
+            tiles_row.controls.append(
+                ft.Container(
+                    ft.Text(display_letter, size=32, weight=ft.FontWeight.BOLD, font_family="Comic Sans MS", color="#FFFFFF"),
+                    width=50,
+                    height=50,
+                    border=ft.border.all(2, "#FFD369"),
+                    border_radius=5,
+                    alignment=ft.alignment.center,
+                    bgcolor="#1A1A1A"
+                )
+            )
         stage_index = 6 - attempts
         if stage_index < 0: stage_index = 0
         hangman_display.content.value = hangman_stages[stage_index]
@@ -86,7 +104,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
 
     def check_word():
         nonlocal score, hints
-        if "_" not in word_display.value:
+        if all(l in guessed_letters for l in secret_word):
             score += 5
             hints += 1
             leaderboard["hints"] = hints
@@ -181,12 +199,14 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
         alignment=ft.MainAxisAlignment.START
     )
 
+    tiles_row = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=8)
+
     center_column = ft.Column(
         [
-            ft.Text(f"Word {word_index+1}/{len(words)}", size=28, color="#FFFFFF", font_family="Creepster"),
+            ft.Text(f"Word {word_index+1}/{len(words)}", size=28, color="#FFFFFF", font_family="Comic Sans MS"),
             hangman_display,
             hearts,
-            word_display,
+            tiles_row,
             ft.Row([score_text, attempts_text, hints_text], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
             ft.Column(rows, spacing=5)
         ],
@@ -214,7 +234,7 @@ def main(page: ft.Page):
     page.title = "Hangman Game"
     page.bgcolor = "#0D0D0D"
     page.bgimage = ft.DecorationImage(src="background.jpg", fit=ft.ImageFit.COVER, repeat=ft.ImageRepeat.NO_REPEAT, opacity=0.15)
-    page.theme = ft.Theme(font_family="Creepster")
+    page.theme = ft.Theme(font_family="Comic Sans MS")
     leaderboard = {"score":0, "hints":3}
     HomeView(page, leaderboard)
 
