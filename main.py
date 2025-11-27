@@ -77,7 +77,10 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
             return
 
         if attempts <= 0:
-            leaderboard["score"] = max(0, leaderboard["score"] - 1)
+            leaderboard["score"] -= 1
+            if leaderboard["score"] < 0:
+                leaderboard["score"] = 0
+
             message.value = f"❌ You lost! The word was: {secret_word}"
             page.update()
             HangmanView(page, leaderboard, word_index + 1)
@@ -128,7 +131,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0):
         ft.Column(
             [
                 ft.Row(
-                    [back_btn, score_text],  # back button on the left, score on the right
+                    [back_btn, score_text],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                 ),
                 ft.Text(f"Word {word_index + 1} / {len(words)}", size=24),
