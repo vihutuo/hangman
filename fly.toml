@@ -1,0 +1,29 @@
+# fly.toml app configuration file generated for hm-red-darkness-7016 on 2025-11-27T23:33:42+05:30
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'hm-red-darkness-7016'
+primary_region = 'sin'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
+
+[build]
+
+[env]
+  FLET_SESSION_TIMEOUT = '600'
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = 'connections'
+    hard_limit = 250
+    soft_limit = 200
+
+[[vm]]
+  size = 'shared-cpu-1x'
