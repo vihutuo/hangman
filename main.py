@@ -11,7 +11,7 @@ def create_button(text, on_click, width=120, height=40):
         width=width,
         height=height,
         style=ft.ButtonStyle(
-            text_style=ft.TextStyle(font_family="Segoe UI", weight=ft.FontWeight.BOLD, size=16)
+            text_style=ft.TextStyle(font_family="playwrite", weight=ft.FontWeight.BOLD, size=16)
         )
     )
 
@@ -207,6 +207,10 @@ def main(page: ft.Page):
     page.title = "Hangman Game"
     page.bgcolor = "#0D0D0D"  # dark background
     page.theme_mode = ft.ThemeMode.DARK  # dark theme enabled
+    page.fonts = {
+        "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf",
+        "playwrite": "fonts/playwrite.ttf",
+    }
     page.bgimage = ft.DecorationImage(
         src="background.jpg",
         fit=ft.ImageFit.COVER,
