@@ -3,6 +3,8 @@ import random
 from words import words
 from mymodules import player_name_ctrl
 from mymodules.leaderboard_ctrl import create_leaderboard_table
+from mymodules.hangman_anim import create_hangman_display, set_hangman_stage, flash_and_shake
+
 
 def create_button(text, on_click, width=120, height=40):
     return ft.ElevatedButton(
@@ -95,8 +97,9 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0, word_list=None):
     score = leaderboard["score"]
     hangman_stages = ["", "O", "O\n |", "O\n/|", "O\n/|\\", "O\n/|\\\n/", "O\n/|\\\n/ \\"]
 
-    hangman_display = ft.Container(width=260, height=200, alignment=ft.alignment.center,
-                                   bgcolor="#1A1A1A", border_radius=15, padding=15, border=ft.border.all(3, "#FF4F4F"))
+    # USE the animation module to create the hangman display
+    hangman_display = create_hangman_display(width=260, height=200)
+
     message = ft.Text("", size=24, color="#FFD369", weight=ft.FontWeight.BOLD, font_family="Segoe UI")
     hearts = ft.Text("❤ " * attempts, size=32, color="#FF2B2B", weight=ft.FontWeight.BOLD, font_family="Courier New")
     tiles_row = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=8)
@@ -114,8 +117,11 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0, word_list=None):
                              width=50, height=50, border=ft.border.all(2, "#FFD369"),
                              border_radius=5, alignment=ft.alignment.center, bgcolor="#1A1A1A")
             )
-        hangman_display.content = ft.Text(hangman_stages[6 - attempts], size=38, color="#FF4F4F",
-                                         weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, font_family="Courier New")
+
+        # use helper to set stage (fade-in). then update the container/page so animation happens
+        set_hangman_stage(hangman_display, hangman_stages[6 - attempts])
+        hangman_display.update()
+
         score_text.value = f"Score: {score}"
         attempts_text.value = f"Attempts: {attempts}"
         hints_text.value = f"Hints: {hints}"
@@ -146,6 +152,10 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0, word_list=None):
         if letter not in secret_word:
             attempts -= 1
             message.value = "❌ Wrong!"
+
+            # call the shared flash_and_shake animation (module handles update calls)
+            flash_and_shake(hangman_display, page)
+
         else:
             message.value = "✔ Correct!"
         update_ui()
@@ -220,6 +230,7 @@ def HangmanView(page: ft.Page, leaderboard, word_index=0, word_list=None):
     page.add(ft.Row([buttons_column, center_column, message_column],
                     alignment=ft.MainAxisAlignment.CENTER, vertical_alignment=ft.CrossAxisAlignment.CENTER, spacing=50))
     update_ui()
+
 
 def main(page: ft.Page):
     page.title = "Hangman Game"
